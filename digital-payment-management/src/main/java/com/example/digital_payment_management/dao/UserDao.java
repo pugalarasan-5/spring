@@ -1,5 +1,6 @@
 package com.example.digital_payment_management.dao;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -8,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.digital_payment_management.entity.Bank;
-import com.example.digital_payment_management.entity.Transcation;
+import com.example.digital_payment_management.entity.Transaction;
 import com.example.digital_payment_management.entity.User;
+import com.example.digital_payment_management.enums.UserStatus;
 import com.example.digital_payment_management.repository.BankRepository;
-import com.example.digital_payment_management.repository.TranscationRepository;
+import com.example.digital_payment_management.repository.TransactionRepository;
 import com.example.digital_payment_management.repository.UserRepository;
 
 @Repository
@@ -23,20 +25,19 @@ public class UserDao {
 	BankRepository bankRepository;
 	
 	@Autowired
-	TranscationRepository transcationRepository;
+	TransactionRepository transactionRepository;
 	
-	@Autowired
+//	@Autowired
 	User user;
 	
 	public User registerUser(User user) {
 		Optional<User> email = userRepository.findByEmail(user.getEmail());
 		Optional<User> phone = userRepository.findByPhone(user.getPhone());
-		user.setCreatedAt(java.time.LocalDate.now());
-		if(email==null && phone==null) {
+		if (email.isEmpty() && phone.isEmpty()) {
+			user.setStatus(UserStatus.ACTIVE);
 			return userRepository.save(user);
-		}
-		else {
-			throw new IllegalArgumentException("Email/Phone details is already exists");
+		} else {
+			throw new IllegalArgumentException("Email or Phone Number Already Exists...");
 		}
 	}
 	
@@ -44,8 +45,8 @@ public class UserDao {
 		return userRepository.findByEmail(email);
 	}
 	
-	public List<User> findByName(String name) {
-		return userRepository.findByName(name);
+	public List<User> findByUserName(String userName) {
+		return userRepository.findByUserName(userName);
 	}
 	
 	public User findById(int id) {
@@ -64,7 +65,7 @@ public class UserDao {
 		return userRepository.findAll();
 	}
 
-	public List<User> findByStatus(String status) {
+	public List<User> findByStatus(UserStatus status) {
 		return userRepository.findByStatus(status);
 	}
 	
@@ -72,10 +73,6 @@ public class UserDao {
 		return userRepository.findByCreatedAt(date);
 	}
 
-//	public List<Bank>  addBank(long id) {
-//		Bank bank = bankRepository.findByAccountNo(id).orElseThrow(()->new IllegalArgumentException("Invalid Account No..."));
-//		return user.setAccounts(bank);
-//	}
 
 	public User updateUserEmail(int id, String email) {
 		User update = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Invalid User Id..."));
@@ -100,11 +97,12 @@ public class UserDao {
 		return userRepository.save(update);
 	}
 
-	public User updateUserStatus(int id, String status) {
+	public User updateUserStatus(int id, UserStatus status) {
 		User update = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Invalid User Id..."));
-		if (update.getStatus().equalsIgnoreCase(status)) {
+		if (update.getStatus() == status) {
 			throw new IllegalArgumentException("User is already " + status);
 		}
+		
 		update.setStatus(status);
 		return userRepository.save(update);
 	}
@@ -113,18 +111,18 @@ public class UserDao {
 	
 	
 	
-	public boolean sendMoney(int senderId, int receiverId, double amount) {
+	public boolean sendMoney(int senderId, int receiverId, BigDecimal amount) {
 		User sender = userRepository.findById(senderId)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Sender Id..."));
 		User receiver = userRepository.findById(receiverId)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Receiver Id..."));
-		if (sender.getWalletBalance() >= amount) {
-			sender.setWalletBalance(sender.getWalletBalance() - amount);
-			receiver.setWalletBalance(receiver.getWalletBalance() + amount);
+		if (sender.getWalletBalance().compareTo(amount) >= 0) {
+			sender.setWalletBalance(sender.getWalletBalance().subtract(amount));
+			receiver.setWalletBalance(receiver.getWalletBalance().add(amount));
 			userRepository.save(sender);
 			userRepository.save(receiver);
-			transcationRepository.save(new Transcation(amount, "Wallet", "Debit", java.time.LocalDate.now(), java.time.LocalTime.now(), sender));
-			transcationRepository.save(new Transcation(amount, "Wallet", "Credit", java.time.LocalDate.now(), java.time.LocalTime.now(), sender));
+			transactionRepository.save(new Transaction(amount, "Wallet", "DEBIT", java.time.LocalDateTime.now(), sender));
+			transactionRepository.save(new Transaction(amount, "Wallet", "CREDIT", java.time.LocalDateTime.now(), receiver));
 			return true;
 		}
 		return false;
@@ -138,18 +136,19 @@ public class UserDao {
 		return user.getAccounts();
 	}
 
-	public boolean addMoney(int userId,long accountNo, double amount) {
+	public boolean addMoney(int userId,long accountNo, BigDecimal amount) {
 		User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("Invalid User Id..."));
 		Bank bank = bankRepository.findByAccountNo(accountNo).orElseThrow(()->new IllegalArgumentException("Invalid Account No..."));
-			if (user.getAccounts().contains(bank) && bank.getBalance() >= amount) {
-				bank.setBalance(bank.getBalance() - amount);
-            user.setWalletBalance(user.getWalletBalance() + amount);
-            userRepository.save(user);
+		if (bank.getBalance().compareTo(amount) >= 0) {
+			bank.setBalance(bank.getBalance().subtract(amount));
+			user.setWalletBalance(user.getWalletBalance().add(amount));
+			userRepository.save(user);
             bankRepository.save(bank);
-            transcationRepository.save(new Transcation(amount, "Wallet", "Credit", java.time.LocalDate.now(), java.time.LocalTime.now(), user));
-            transcationRepository.save(new Transcation(amount, bank.getBankName(), "Debit", java.time.LocalDate.now(), java.time.LocalTime.now(), user));
-            return true;
-            }
+            
+			transactionRepository.save(new Transaction(amount, "Wallet", "CREDIT", java.time.LocalDateTime.now(), user));
+			transactionRepository.save(new Transaction(amount, bank.getBankName(), "DEBIT", java.time.LocalDateTime.now(), user));
+			return true;
+		}
 		return false;
 	}
 

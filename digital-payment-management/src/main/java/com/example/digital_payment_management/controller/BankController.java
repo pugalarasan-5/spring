@@ -1,10 +1,12 @@
 package com.example.digital_payment_management.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.digital_payment_management.entity.Bank;
+import com.example.digital_payment_management.dto.BankDTO;
+import com.example.digital_payment_management.dto.BankLoginDTO;
+import com.example.digital_payment_management.enums.BankStatus;
 import com.example.digital_payment_management.service.BankService;
 import com.example.digital_payment_management.util.ResponseStructure;
 
@@ -23,105 +27,87 @@ public class BankController {
 
 	@Autowired
 	BankService bankService;
-	
-	@PostMapping("/registerBank")
-	public ResponseEntity<?> registerBank(@RequestBody Bank bank){
-		ResponseStructure<?> structure = bankService.registerBank(bank);
-		return new ResponseEntity<>(structure,HttpStatus.ACCEPTED);
+
+	@PostMapping
+	public ResponseEntity<?> registerBank(@RequestBody BankDTO bankDto) {
+		ResponseStructure<?> structure = bankService.registerBank(bankDto);
+		return new ResponseEntity<>(structure, HttpStatus.ACCEPTED);
+
 	}
-	
-	@RequestMapping("/loginBank")
-	public ResponseEntity<?> bankLogin(@RequestParam String email,@PathVariable int pin){
-		ResponseStructure<?> bankLogin = bankService.bankLogin(email,pin);
-		return new ResponseEntity<>(bankLogin,HttpStatus.OK);
+//
+	@PostMapping("/login")
+	public ResponseEntity<?> bankLogin(@RequestBody BankLoginDTO loginDTO) {
+		return ResponseEntity.ok(bankService.bankLogin(loginDTO));
 	}
-	
-	
+//
 //	GET OR FIND
-	
-	@RequestMapping("/get/byAccountNo/{accountNo}")
-	public ResponseEntity<?> findByAccountNo(@PathVariable long accountNo){
-		ResponseStructure<?> structure = bankService.findByAccountNo(accountNo);
-		return new ResponseEntity<>(structure,HttpStatus.FOUND);
+
+	@GetMapping("/{accountNo}")
+	public ResponseEntity<?> findByAccountNo(@PathVariable long accountNo) {
+		return ResponseEntity.ok(bankService.findByAccountNo(accountNo));
 	}
-	
-	@RequestMapping("/get/byUserName")
+//
+	@GetMapping("/byUserName")
 	public ResponseEntity<?> findByUserName(@RequestParam String userName) {
-		ResponseStructure<?> structure = bankService.findByUserName(userName);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findByUserName(userName));
 	}
-	
-	@RequestMapping("/get/byBankName")
+//
+	@GetMapping("/byBankName")
 	public ResponseEntity<?> findByBankName(@RequestParam String bankName) {
-		ResponseStructure<?> structure = bankService.findByBankName(bankName);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findByBankName(bankName));
 	}
-	
-	@RequestMapping("/get/byStatus")
-	public ResponseEntity<?> findByStatus(@RequestParam String status) {
-		ResponseStructure<?> structure = bankService.findByStatus(status);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+//
+	@GetMapping("/byStatus")
+	public ResponseEntity<?> findByStatus(@RequestParam BankStatus status) {
+		return ResponseEntity.ok(bankService.findByStatus(status));
 	}
-	
-	@RequestMapping("/get/byPhone")
+//
+	@GetMapping("/byPhone")
 	public ResponseEntity<?> findByPhone(@RequestParam String phone) {
-		ResponseStructure<?> structure = bankService.findByPhone(phone);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findByPhone(phone));
 	}
-	
-	@RequestMapping("/get/ByEmail")
+//
+	@GetMapping("/byEmail")
 	public ResponseEntity<?> findByEmail(@RequestParam String email) {
-		ResponseStructure<?> structure = bankService.findByEmail(email);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findByEmail(email));
 	}
-	
-	@RequestMapping("/get/byCreatedAt")
+//
+	@GetMapping("/byCreatedAt")
 	public ResponseEntity<?> findByCreatedAt(@RequestParam LocalDate date) {
-		ResponseStructure<?> structure = bankService.findByCreatedAt(date);
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findByCreatedAt(date));
 	}
-	
-	@RequestMapping("/get/all")
+//
+	@GetMapping
 	public ResponseEntity<?> findAll() {
-		ResponseStructure<?> structure = bankService.findAll();
-		return new ResponseEntity<>(structure, HttpStatus.FOUND);
+		return ResponseEntity.ok(bankService.findAll());
 	}
-	
+//	
+
 //	UPDATE
-	
-	@PutMapping("/updateBank/status/{accountNo}")
-	public ResponseEntity<?> updateBankStatus(@PathVariable long accountNo, @RequestParam String status) {
-		ResponseStructure<?> structure = bankService.updateBankStatus(accountNo, status);
-		return new ResponseEntity<>(structure, HttpStatus.OK);
+
+	@PutMapping("/updateStatus")
+	public ResponseEntity<?> updateBankStatus(@RequestParam long accountNo,
+	                                          @RequestParam BankStatus status) {
+		return ResponseEntity.ok(bankService.updateBankStatus(accountNo, status));
 	}
-	
-	@PutMapping("/updateBank/pin/{accountNo}")
-	public ResponseEntity<?> updateBankPin(@PathVariable long accountNo, @RequestParam int pin) {
-		ResponseStructure<?> structure = bankService.updateBankPin(accountNo, pin);
-		return new ResponseEntity<>(structure, HttpStatus.OK);
+//
+	@PutMapping("/UpdatePin/{accountNo}")
+	public ResponseEntity<?> updateBankPin(@PathVariable long accountNo, @RequestParam String pin) {
+		return ResponseEntity.ok(bankService.updateBankPin(accountNo, pin));
 	}
-	
-	@PutMapping("/updateBank/address/{accountNo}")
+//
+	@PutMapping("/updateAddress/{accountNo}")
 	public ResponseEntity<?> updateBankAddress(@PathVariable long accountNo, @RequestParam String address) {
-		ResponseStructure<?> structure = bankService.updateBankAddress(accountNo, address);
-		return new ResponseEntity<>(structure, HttpStatus.OK);
+		return ResponseEntity.ok(bankService.updateBankAddress(accountNo, address));
 	}
-	
-	
-	
+//
 //	SEND MONEY
-	
-	@RequestMapping("/sendMoney")
-	public ResponseEntity<?> sendMoneyByBank(@RequestParam long senderId,@RequestParam long receiverId,@RequestParam double amount){
-		ResponseStructure<?> structure = bankService.sendMoneyByBank(senderId,receiverId,amount);
-		return new ResponseEntity<>(structure,HttpStatus.OK);
+
+	@PostMapping("/sendMoney")
+	public ResponseEntity<?> sendMoneyByBank(@RequestParam long senderAccountNo, @RequestParam long receiverAccountNo,
+			@RequestParam BigDecimal amount) {
+		return ResponseEntity.ok(bankService.sendMoneyByBank(senderAccountNo, receiverAccountNo, amount));
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
