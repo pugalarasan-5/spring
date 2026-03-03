@@ -1,15 +1,22 @@
 package com.example.digital_payment_management.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.digital_payment_management.dao.UserDao;
+import com.example.digital_payment_management.dto.BankDTO;
+import com.example.digital_payment_management.dto.LoginRequestDTO;
+import com.example.digital_payment_management.dto.UserDTO;
 import com.example.digital_payment_management.entity.Bank;
 import com.example.digital_payment_management.entity.User;
+import com.example.digital_payment_management.enums.UserStatus;
 import com.example.digital_payment_management.util.ResponseStructure;
 
 @Service
@@ -17,25 +24,33 @@ public class UserService {
 	@Autowired
 	UserDao userDao;
 	
-	public ResponseStructure<?> registerUser(User user){
+	@Autowired
+	ModelMapper mapper;
+	
+	public ResponseStructure<?> registerUser(UserDTO userDto){
+		User user = mapper.map(userDto, User.class);
 		User data = userDao.registerUser(user);
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(data);
+		UserDTO map = mapper.map(data, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setMessage("User Register Succesfully...");
 		structure.setStatusCode(200);
 		return structure;
 	}
 	
-	public ResponseStructure<?> userLogin(String email,String password){
+	public ResponseStructure<?> userLogin(LoginRequestDTO loginDTO){
+		String email = loginDTO.getEmail();
+		String password = loginDTO.getPassword();
 		Optional<User> login = userDao.userLogin(email);
 		if(login==null) {
 			throw new IllegalArgumentException("Invalid Email id...");
 		}
 		User user = login.get();
 		if(user.getPassword().equals(password)) {
-			ResponseStructure<User> structure=new ResponseStructure<>();
-			structure.setData(user);
+			UserDTO map = mapper.map(user, UserDTO.class);
+			ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+			structure.setData(map);
 			structure.setMessage("Login Successfully...");
 			structure.setTimestamp(LocalDateTime.now());
 			structure.setStatusCode(200);
@@ -44,42 +59,32 @@ public class UserService {
 		throw new IllegalArgumentException("Password Not Match...");
 	}
 	
-//	public ResponseStructure<?> addBank(long id) {
-//		List<Bank> bank = userDao.addBank(id);
-//		if(bank.isEmpty()) {
-//			throw new IllegalArgumentException("Bank Not Found...");
-//		}
-//		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-//		structure.setData(bank);
-//		structure.setMessage("Bank Added sucessfully...");
-//		structure.setStatusCode(201);
-//		structure.setTimestamp(LocalDateTime.now());
-//		return structure;
-//	}
 	
 	
 //	GET OR FIND
 	
 	public ResponseStructure<?> findById(int id){
-		User byId = userDao.findById(id);
-		if(byId==null) {
+		User user = userDao.findById(id);
+		if(user==null) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(byId);
+		UserDTO map = mapper.map(user,UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setMessage("User Found !!");
 		structure.setStatusCode(201);
 		return structure;
 	}
 	
-	public ResponseStructure<?> findByName(String name) {
-		List<User> list = userDao.findByName(name);
+	public ResponseStructure<?> findByUserName(String userName) {
+		List<User> list = userDao.findByUserName(userName);
 		if(list.isEmpty()) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<List<User>> structure=new ResponseStructure<>();
-		structure.setData(list);
+		List<UserDTO> map = list.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
+		ResponseStructure<List<UserDTO>> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
@@ -91,8 +96,9 @@ public class UserService {
 		if(byEmail==null) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(byEmail);
+		UserDTO map = mapper.map(byEmail, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found!!!");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
@@ -104,21 +110,23 @@ public class UserService {
 		if(byPhone==null) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(byPhone);
+		UserDTO map = mapper.map(byPhone, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
 		return structure;
 	}
 	
-	public ResponseStructure<?> findByStatus(String status){
+	public ResponseStructure<?> findByStatus(UserStatus status){
 		List<User> list = userDao.findByStatus(status);
 		if(list.isEmpty()) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<List<User>> structure=new ResponseStructure<>();
-		structure.setData(list);
+		List<UserDTO> map = list.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
+		ResponseStructure<List<UserDTO>> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
@@ -130,8 +138,9 @@ public class UserService {
 		if(list.isEmpty()) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<List<User>> structure=new ResponseStructure<>();
-		structure.setData(list);
+		List<UserDTO> map = list.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
+		ResponseStructure<List<UserDTO>> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
@@ -143,8 +152,9 @@ public class UserService {
 		if(list.isEmpty()) {
 			throw new IllegalArgumentException("User Not Found");
 		}
-		ResponseStructure<List<User>> structure=new ResponseStructure<>();
-		structure.setData(list);
+		List<UserDTO> map = list.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
+		ResponseStructure<List<UserDTO>> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setStatusCode(201);
@@ -158,8 +168,9 @@ public class UserService {
 		if(user==null) {
 			throw new IllegalArgumentException("Given Details is Already Exists...");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(user);
+		UserDTO map = mapper.map(user, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setMessage("User Updated Succesfully...");
 		structure.setStatusCode(200);
@@ -172,28 +183,30 @@ public class UserService {
 		if (user == null) {
 			throw new IllegalArgumentException("Given Details is Already Exists...");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(user);
+		UserDTO map = mapper.map(user, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setMessage("User Updated Succesfully...");
 		structure.setStatusCode(200);
 		return structure;
 	}
 
-	public ResponseStructure<?> updateUserStatus(int id, String status) {
+	public ResponseStructure<?> updateUserStatus(int id, UserStatus status) {
 		User user = userDao.updateUserStatus(id,status);
 		if (user == null) {
 			throw new IllegalArgumentException("Given Details is Already Exists...");
 		}
-		ResponseStructure<User> structure=new ResponseStructure<>();
-		structure.setData(user);
+		UserDTO map = mapper.map(user, UserDTO.class);
+		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setTimestamp(LocalDateTime.now());
 		structure.setMessage("User Updated Succesfully...");
 		structure.setStatusCode(200);
 		return structure;
 	}
 
-	public ResponseStructure<?> sendMoney(int senderId, int receiverId, double amount) {
+	public ResponseStructure<?> sendMoney(int senderId, int receiverId, BigDecimal amount) {
 		boolean sendMoney = userDao.sendMoney(senderId, receiverId, amount);
 		if (sendMoney) {
 			ResponseStructure<String> structure = new ResponseStructure<>();
@@ -211,15 +224,16 @@ public class UserService {
 		if (bank.isEmpty()) {
 			throw new IllegalArgumentException("Bank Not Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Added sucessfully...");
 		structure.setStatusCode(201);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
 	}
 
-	public ResponseStructure<?> addMoney(int userId,long accountNo, double amount) {
+	public ResponseStructure<?> addMoney(int userId,long accountNo, BigDecimal amount) {
 		boolean addMoney = userDao.addMoney(userId,accountNo, amount);
 		if (addMoney) {
 			ResponseStructure<String> structure = new ResponseStructure<>();

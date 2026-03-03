@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.digital_payment_management.entity.Bank;
+import com.example.digital_payment_management.enums.BankStatus;
 
 public interface BankRepository extends JpaRepository<Bank, Integer>{
 
@@ -15,7 +16,7 @@ public interface BankRepository extends JpaRepository<Bank, Integer>{
 
 	List<Bank> findByBankName(String bankName);
 
-	List<Bank> findByStatus(String status);
+	List<Bank> findByStatus(BankStatus status);
 
 	Optional<Bank> findByPhone(String phone);
 

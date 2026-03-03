@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.digital_payment_management.entity.User;
+import com.example.digital_payment_management.enums.UserStatus;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -13,9 +14,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<User> findByPhone(String phone);
 
-	List<User> findByName(String name);
+	List<User> findByUserName(String userName);
 
-	List<User> findByStatus(String status);
+	List<User> findByStatus(UserStatus status);
 
 	List<User> findByCreatedAt(LocalDate date);
 

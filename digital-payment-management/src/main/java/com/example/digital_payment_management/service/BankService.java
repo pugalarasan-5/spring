@@ -1,28 +1,36 @@
 package com.example.digital_payment_management.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.digital_payment_management.dao.BankDao;
+import com.example.digital_payment_management.dto.BankDTO;
+import com.example.digital_payment_management.dto.BankLoginDTO;
 import com.example.digital_payment_management.entity.Bank;
+import com.example.digital_payment_management.enums.BankStatus;
 import com.example.digital_payment_management.util.ResponseStructure;
 
 @Service
 public class BankService {
 	@Autowired
 	BankDao bankDao;
+	
+	@Autowired
+	ModelMapper mapper;
 
-	public ResponseStructure<?> registerBank(Bank bank) {
+	public ResponseStructure<?> registerBank(BankDTO bankDto) {
+		Bank bank = mapper.map(bankDto, Bank.class);
 		Bank registerBank = bankDao.registerBank(bank);
 		if(registerBank==null) {
 			throw new IllegalArgumentException("Bank Not Register");
 		}
-		ResponseStructure<Bank> structure=new ResponseStructure<>();
-		structure.setData(registerBank);
+		BankDTO map = mapper.map(registerBank, BankDTO.class);
+		ResponseStructure<BankDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Register SuccessFully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -30,14 +38,15 @@ public class BankService {
 		
 	}
 	
-	public ResponseStructure<?> bankLogin(String email, int pin) {
-		Optional<Bank> bank = bankDao.bankLogin(email);
-		if(bank.isEmpty()) {
+	public ResponseStructure<?> bankLogin(BankLoginDTO loginDTO) {
+		Bank bank = bankDao.bankLogin(loginDTO.getEmail());
+		if(bank==null) {
 			throw new IllegalArgumentException("Invalid Email Id...");
 		}
-		if(bank.get().getPin()==pin) {
-			ResponseStructure<Optional<Bank>> structure=new ResponseStructure<>();
-			structure.setData(bank);
+		if(bank.getPin().equals(loginDTO.getPin())) {
+			BankDTO map = mapper.map(bank, BankDTO.class);
+			ResponseStructure<BankDTO> structure=new ResponseStructure<>();
+			structure.setData(map);
 			structure.setMessage("Login Done !!!");
 			structure.setStatusCode(201);
 			structure.setTimestamp(LocalDateTime.now());
@@ -51,9 +60,10 @@ public class BankService {
 		if(bank==null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<Bank> structure=new ResponseStructure<>();
-		structure.setData(bank);
-		structure.setMessage("Bank Register SuccessFully...");
+		BankDTO map = mapper.map(bank, BankDTO.class);
+		ResponseStructure<BankDTO> structure=new ResponseStructure<>();
+		structure.setData(map);
+		structure.setMessage("Bank Found SuccessFully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
@@ -64,8 +74,9 @@ public class BankService {
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -77,21 +88,23 @@ public class BankService {
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
 	}
 
-	public ResponseStructure<?> findByStatus(String status) {
+	public ResponseStructure<?> findByStatus(BankStatus status) {
 		List<Bank> bank = bankDao.findByStatus(status);
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -103,8 +116,9 @@ public class BankService {
 		if (byPhone == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<Bank> structure = new ResponseStructure<>();
-		structure.setData(byPhone);
+		BankDTO map = mapper.map(byPhone, BankDTO.class);
+		ResponseStructure<BankDTO> structure = new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -116,8 +130,9 @@ public class BankService {
 		if (byEmail == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<Bank> structure = new ResponseStructure<>();
-		structure.setData(byEmail);
+		BankDTO map = mapper.map(byEmail, BankDTO.class);
+		ResponseStructure<BankDTO> structure = new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -129,8 +144,9 @@ public class BankService {
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -142,34 +158,37 @@ public class BankService {
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		ResponseStructure<List<Bank>> structure = new ResponseStructure<>();
-		structure.setData(bank);
+		List<BankDTO> list = bank.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
 		structure.setMessage("Bank Found Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
 	}
 
-	public ResponseStructure<?> updateBankStatus(long accountNo, String status) {
+	public ResponseStructure<?> updateBankStatus(long accountNo, BankStatus status){
 		Bank updateBankStatus = bankDao.updateBankStatus(accountNo,status);
 		if (updateBankStatus == null) {
 			throw new IllegalArgumentException("Bank Status Not Updated...");
 		}
-		ResponseStructure<Bank> structure = new ResponseStructure<>();
-		structure.setData(updateBankStatus);
+		BankDTO map = mapper.map(updateBankStatus, BankDTO.class);
+		ResponseStructure<BankDTO> structure = new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Status Updated Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
 	}
 
-	public ResponseStructure<?> updateBankPin(long accountNo, int pin) {
+	public ResponseStructure<?> updateBankPin(long accountNo, String pin) {
 		Bank updateBankPin = bankDao.updateBankPin(accountNo, pin);
 		if (updateBankPin == null) {
 			throw new IllegalArgumentException("Bank Pin Not Updated...");
 		}
-		ResponseStructure<Bank> structure = new ResponseStructure<>();
-		structure.setData(bankDao.findByAccountNo(accountNo));
+		BankDTO map = mapper.map(updateBankPin, BankDTO.class);
+		ResponseStructure<BankDTO> structure = new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Pin Updated Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
@@ -182,20 +201,16 @@ public class BankService {
 		if (bank == null) {
 			throw new IllegalArgumentException("Bank NOT Found...");
 		}
-		bank.setAddress(address);
-		Bank updateBankAddress = bankDao.registerBank(bank);
-		if (updateBankAddress == null) {
-			throw new IllegalArgumentException("Bank Address Not Updated...");
-		}
-		ResponseStructure<Bank> structure = new ResponseStructure<>();
-		structure.setData(updateBankAddress);
+		BankDTO map = mapper.map(bank, BankDTO.class);
+		ResponseStructure<BankDTO> structure = new ResponseStructure<>();
+		structure.setData(map);
 		structure.setMessage("Bank Address Updated Successfully...");
 		structure.setStatusCode(200);
 		structure.setTimestamp(LocalDateTime.now());
 		return structure;
 	}
 
-	public ResponseStructure<?> sendMoneyByBank(long senderId, long receiverId, double amount) {
+	public ResponseStructure<?> sendMoneyByBank(long senderId, long receiverId, BigDecimal amount) {
 		boolean sendMoneyBybank = bankDao.sendMoneyBybank(senderId,receiverId,amount);
 		if(sendMoneyBybank) {
 			ResponseStructure<String> structure = new ResponseStructure<>();
