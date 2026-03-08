@@ -1,0 +1,65 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    margin:0;
+    height:100vh;
+}
+
+/* Main container */
+.account-container{
+    width:400px;
+    margin:60px auto;
+    padding:30px;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+/* Heading */
+.account-container h2{
+    margin-bottom:20px;
+    color:#333;
+}
+
+/* Form layout */
+.account-container form{
+    display:flex;
+    flex-direction:column;
+}
+
+/* Inputs */
+.account-container input{
+    padding:10px;
+    margin:7px 0;
+    border-radius:5px;
+    border:1px solid #ccc;
+    font-size:14px;
+}
+
+/* Buttons */
+.account-container button{
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    font-size:15px;
+    cursor:pointer;
+    background:#667eea;
+    color:white;
+    transition:0.3s;
+}
+
+/* Hover effect */
+.account-container button:hover{
+    background:#4b5bdc;
+}
+
+/* Cancel button */
+.account-container button:nth-child(2){
+    background:#e74c3c;
+}
+
+.account-container button:nth-child(2):hover{
+    background:#c0392b;
+}

@@ -24,4 +24,6 @@ public interface BankRepository extends JpaRepository<Bank, Integer>{
 
 	List<Bank> findByCreatedAt(LocalDate date);
 
+	List<Bank> findByUserId(int userId);
+
 }

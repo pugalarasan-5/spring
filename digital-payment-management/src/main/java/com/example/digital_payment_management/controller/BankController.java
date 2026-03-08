@@ -110,5 +110,9 @@ public class BankController {
 		return ResponseEntity.ok(bankService.sendMoneyByBank(senderAccountNo, receiverAccountNo, amount));
 
 	}
+	@GetMapping("/getUserId")
+	public ResponseEntity<?> getUserIdByAccountNo(@RequestParam int id) {
+		return ResponseEntity.ok(bankService.getByUserId(id));
+	}
 
 }

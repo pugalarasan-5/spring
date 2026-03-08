@@ -223,5 +223,16 @@ public class BankService {
 		return null;
 	}
 
+	public ResponseStructure<?> getByUserId(int userId) {
+		List<Bank> banks= bankDao.getUserId(userId);
+		List<BankDTO> list = banks.stream().map(b -> mapper.map(b, BankDTO.class)).toList();
+		ResponseStructure<List<BankDTO>> structure = new ResponseStructure<>();
+		structure.setData(list);
+		structure.setMessage("User Id Found Successfully...");
+		structure.setStatusCode(200);
+		structure.setTimestamp(LocalDateTime.now());
+		return structure;
+	}
+
 	
 }

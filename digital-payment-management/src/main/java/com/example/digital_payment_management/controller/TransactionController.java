@@ -59,10 +59,10 @@ public class TransactionController {
 		return ResponseEntity.ok(byDate);
 	}
 	
-//	@GetMapping("/ByUser")
-//	public ResponseEntity<?> findByUser(@RequestParam int id) {
-//		List<TransactionDTO> byUser = transactionService.findByUser(id);
-//		return ResponseEntity.ok(byUser);
-//	}
+	@GetMapping("/ByUser")
+	public ResponseEntity<?> findByUser(@RequestParam int id) {
+		List<TransactionDTO> byUser = transactionService.findByUser(id);
+		return ResponseEntity.ok(byUser);
+	}
 	
 }

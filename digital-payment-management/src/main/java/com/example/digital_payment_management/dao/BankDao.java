@@ -112,4 +112,9 @@ public class BankDao {
 		return false;
 	}
 
+	public List<Bank> getUserId(int userId) {
+		
+		return bankRepository.findByUserId(userId);
+	}
+
 }

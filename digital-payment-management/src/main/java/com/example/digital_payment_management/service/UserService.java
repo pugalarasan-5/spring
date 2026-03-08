@@ -46,6 +46,7 @@ public class UserService {
 		if(login==null) {
 			throw new IllegalArgumentException("Invalid Email id...");
 		}
+		
 		User user = login.get();
 		if(user.getPassword().equals(password)) {
 			UserDTO map = mapper.map(user, UserDTO.class);
@@ -112,6 +113,7 @@ public class UserService {
 		}
 		UserDTO map = mapper.map(byPhone, UserDTO.class);
 		ResponseStructure<UserDTO> structure=new ResponseStructure<>();
+		
 		structure.setData(map);
 		structure.setMessage("User Found...");
 		structure.setTimestamp(LocalDateTime.now());
@@ -207,10 +209,11 @@ public class UserService {
 	}
 
 	public ResponseStructure<?> sendMoney(int senderId, int receiverId, BigDecimal amount) {
-		boolean sendMoney = userDao.sendMoney(senderId, receiverId, amount);
-		if (sendMoney) {
-			ResponseStructure<String> structure = new ResponseStructure<>();
-			structure.setData("Money Send Succesfully...");
+		User sendMoney = userDao.sendMoney(senderId, receiverId, amount);
+		if (sendMoney!=null) {
+			UserDTO map = mapper.map(sendMoney, UserDTO.class);
+			ResponseStructure<UserDTO> structure = new ResponseStructure<>();
+			structure.setData(map);
 			structure.setTimestamp(LocalDateTime.now());
 			structure.setMessage("Money Send Succesfully...");
 			structure.setStatusCode(200);
@@ -234,16 +237,29 @@ public class UserService {
 	}
 
 	public ResponseStructure<?> addMoney(int userId,long accountNo, BigDecimal amount) {
-		boolean addMoney = userDao.addMoney(userId,accountNo, amount);
-		if (addMoney) {
-			ResponseStructure<String> structure = new ResponseStructure<>();
-			structure.setData("Money Added Succesfully...");
+		User addMoney = userDao.addMoney(userId,accountNo, amount);
+		if (addMoney!=null) {
+			UserDTO map = mapper.map(addMoney, UserDTO.class);
+			ResponseStructure<UserDTO> structure = new ResponseStructure<>();
+			structure.setData(map);
 			structure.setMessage("Money Added Succesfully...");
 			structure.setStatusCode(200);
 			structure.setTimestamp(LocalDateTime.now());
 			return structure;
 		}
 		throw new IllegalArgumentException("Failed to Add Money...");
+	}
+
+	public ResponseStructure<List<UserDTO>> getAll() {
+		List<User> list = userDao.getAll();
+		 List<UserDTO> as=list.stream().map(User->mapper.map(User, UserDTO.class)).toList();
+		 ResponseStructure<List<UserDTO>> rs=new ResponseStructure<List<UserDTO>>();
+			rs.setData(as);
+			rs.setTimestamp(LocalDateTime.now());
+			rs.setStatusCode(201);
+			rs.setMessage("ur registion is successflly");
+		 return rs;
+	
 	}
 
 	

@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+
 import com.example.digital_payment_management.entity.Transaction;
-import com.example.digital_payment_management.entity.User;
+
 import com.example.digital_payment_management.enums.TransactionType;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Integer>{
@@ -19,7 +20,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	List<Transaction> findByDate(LocalDateTime date);
 
 	List<Transaction> findByAmount(BigDecimal amount);
-
-	List<User> findByUser(User user);
+	
+	List<Transaction> findByUserIdOrderByIdDesc(int userId);
 
 }

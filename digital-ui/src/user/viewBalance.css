@@ -1,0 +1,72 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg,#11998e,#38ef7d);
+    margin:0;
+}
+
+/* Main container */
+.balance-container{
+    width:400px;
+    margin:70px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+/* Heading */
+.balance-container h2{
+    margin-bottom:20px;
+}
+
+/* Select box */
+.balance-container select{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+/* Input */
+.balance-container input{
+    width:95%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:10px;
+}
+
+/* Buttons */
+.balance-container button{
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    width:100%;
+    background:#11998e;
+    color:white;
+    cursor:pointer;
+    font-size:14px;
+    transition:0.3s;
+}
+
+.balance-container button:hover{
+    background:#0b7f76;
+}
+
+/* Bank details card */
+.bank-details{
+    margin-top:20px;
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:8px;
+    text-align:left;
+    background:#f9f9f9;
+}
+
+/* Error message */
+.error-text{
+    color:red;
+    margin-top:10px;
+}

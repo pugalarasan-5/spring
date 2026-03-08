@@ -1,20 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-
+import "./addPocket.css";
 export const AddPocket = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
+  const userE = JSON.parse(localStorage.getItem("user"));
 
-  const user = location.state?.user;
+  const user = JSON.parse(localStorage.getItem("user"))?.data || location.state?.res;
 
+  const [banks, setBanks] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [pin, setPin] = useState("");
+  
 
-  const bank = user?.bank || [];
+  // 🔹 Get bank accounts from API
+  useEffect(() => {
+
+    if(!user?.id) return;
+
+    axios
+      .get(`http://localhost:8080/bank/getUserId?id=${user.id}`)
+      .then((response) => {
+        setBanks(response.data.data);
+      })
+      .catch((err) => console.log(err));
+
+  }, [user?.id]);
+
 
   const handleSend = async () => {
+
     if (!user) {
       alert("User not found. Please login again.");
       navigate("/");
@@ -26,7 +44,7 @@ export const AddPocket = () => {
       return;
     }
 
-    if (amount <= 0) {
+    if (!amount || amount <= 0) {
       alert("Amount must be greater than zero.");
       return;
     }
@@ -36,62 +54,83 @@ export const AddPocket = () => {
       return;
     }
 
-    // 👉 Find selected account
-    const account = bank.find(acc => acc.accountNo === selectedAccount);
+    // 🔹 find selected account
+    const account = banks.find(
+      (acc) => acc.accountNo === Number(selectedAccount)
+    );
 
-    // 👉 Validate PIN
+    // 🔹 check pin
     if (!account || account.pin !== pin) {
       alert("Invalid PIN");
       return;
     }
 
     try {
-      await axios.post("http://localhost:8080/transaction/send", {
-        senderId: selectedAccount,   // from selected bank
-        accountNo: user.userId,      // to pocket/user
-        amount: amount,
-      });
+
+      const response = await axios.post(
+        `http://localhost:8080/user/addMoney?userId=${Number(user.id)}&accountNo=${Number(selectedAccount)}&amount=${Number(amount)}`
+      );
+
+      
+        localStorage.setItem("user", JSON.stringify(response.data));
 
       alert("Transaction Successful");
+      localStorage.setItem("user", JSON.stringify(response.data));
+
+      setAmount("");
+      setPin("");
+
     } catch (err) {
       console.error(err);
       alert("Transaction Failed");
+      localStorage.setItem("user", JSON.stringify(userE));
     }
   };
 
-  return (
-    <>
-      <h2>Add money to pocket</h2>
 
-      {/* ✅ Select Bank Account */}
-      <select onChange={(e) => setSelectedAccount(e.target.value)}>
-        <option value="">Select Account</option>
-        {bank.map((acc) => (
-          <option key={acc.accountNo} value={acc.accountNo}>
-            {acc.accountNo} - {acc.bankName}
-          </option>
-        ))}
-      </select>
+ return (
+  <div className="pocket-container">
 
-      {/* ✅ Amount */}
-      <input
-        placeholder="Amount"
-        type="number"
-        onChange={(e) => setAmount(e.target.value)}
-      />
+    <h2>Add Money To Pocket</h2>
 
-      {/* ✅ PIN */}
-      <input
-        type="password"
-        placeholder="PIN"
-        onChange={(e) => setPin(e.target.value)}
-      />
+    <select onChange={(e) => setSelectedAccount(e.target.value)}>
+      <option value="">Select Account</option>
 
-      <button onClick={handleSend}>Add Money</button>
+      {banks.map((acc) => (
+        <option key={acc.accountNo} value={acc.accountNo}>
+          {acc.bankName} - {acc.accountNo}
+        </option>
+      ))}
+    </select>
 
-      <button onClick={() => navigate("/home", { state: { user } })}>
-        Back
-      </button>
-    </>
-  );
+    <br/><br/>
+
+    <input
+      type="number"
+      placeholder="Amount"
+      value={amount}
+      onChange={(e) => setAmount(e.target.value)}
+    />
+
+    <br/><br/>
+
+    <input
+      type="password"
+      placeholder="PIN"
+      value={pin}
+      onChange={(e) => setPin(e.target.value)}
+    />
+
+    <br/><br/>
+
+    <button onClick={handleSend}>Add Money</button>
+
+    <br/><br/>
+
+    <button onClick={() => navigate("/home")}>
+      Back
+    </button>
+
+  </div>
+);
 };

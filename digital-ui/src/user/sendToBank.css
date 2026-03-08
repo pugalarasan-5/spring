@@ -1,0 +1,70 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg,#43cea2,#185a9d);
+    margin:0;
+}
+
+/* Main container */
+.bank-transfer-container{
+    width:400px;
+    margin:70px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+/* Heading */
+.bank-transfer-container h2{
+    margin-bottom:20px;
+    color:#333;
+}
+
+/* Select and input */
+.bank-transfer-container select,
+.bank-transfer-container input{
+    width:95%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:8px;
+    font-size:14px;
+}
+
+/* Balance text */
+.balance-text{
+    margin-top:10px;
+    font-weight:bold;
+    color:#2c3e50;
+}
+
+/* Buttons */
+.bank-transfer-container button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    background:#185a9d;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.bank-transfer-container button:hover{
+    background:#0f3f73;
+}
+
+/* Success message */
+.success-msg{
+    color:green;
+    font-weight:bold;
+}
+
+/* Error message */
+.error-msg{
+    color:red;
+    font-weight:bold;
+}

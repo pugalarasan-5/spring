@@ -1,26 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./sendToBank.css";
 
-export const SendToBank = () => {
+function SendToBank() {
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ fallback for refresh
+  // fallback for refresh
   const user =
-    location.state?.user ;
+    location.state?.user?.data || JSON.parse(localStorage.getItem("user"))?.data;
 
-  const bank = user?.bank || [];
-
-  const [fromAccount, setFromAccount] = useState(""); // your bank
-  const [toAccount, setToAccount] = useState("");     // receiver bank
+  const [banks, setBanks] = useState([]);
+  const [selectedBank, setSelectedBank] = useState("");
+  const [fromAccount, setFromAccount] = useState("");
+  const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [pin, setPin] = useState("");
+  const [balance, setBalance] = useState(null);
+  const [message, setMessage] = useState("");
 
+  // 🔹 Get bank accounts
+  useEffect(() => {
+
+    if (!user?.id) return;
+
+    axios
+      .get(`http://localhost:8080/bank/getUserId?id=${user.id}`)
+      .then((res) => {
+        setBanks(res.data.data);
+      })
+      .catch((err) => console.log(err));
+
+  }, [user?.id]);
+
+  // 🔹 Filter accounts by bank
+  const filteredAccounts = banks.filter(
+    (acc) => acc.bankName === selectedBank
+  );
+
+  // 🔹 When account selected
+  const handleAccountChange = (e) => {
+
+    const accNo = Number(e.target.value);
+    setFromAccount(accNo);
+
+    const account = banks.find((b) => b.accountNo === accNo);
+
+    if (account) {
+      setBalance(account.balance);
+    }
+  };
+
+  // 🔹 Send money
   const handleSend = async () => {
-    if (!user) {
-      alert("User not found. Please login again.");
-      navigate("/");
+
+    if (!selectedBank) {
+      alert("Please select bank");
       return;
     }
 
@@ -35,84 +72,109 @@ export const SendToBank = () => {
     }
 
     if (Number(amount) <= 0) {
-      alert("Amount must be greater than zero.");
+      alert("Amount must be greater than zero");
+      return;
+    }
+
+    if (Number(amount) > balance) {
+      alert("Insufficient balance");
       return;
     }
 
     if (!pin) {
-      alert("Please enter your PIN.");
+      alert("Enter PIN");
       return;
     }
 
-    // 👉 Find selected account
-    const account = bank.find(acc => acc.accountNo === fromAccount);
+    const account = banks.find((acc) => acc.accountNo === fromAccount);
 
-    // 👉 Validate PIN
     if (!account || account.pin !== pin) {
       alert("Invalid PIN");
       return;
     }
 
     try {
-      await axios.post("http://localhost:8080/transaction/send", {
-        senderId: fromAccount,
-        accountNo: toAccount,
-        amount: Number(amount),
-      });
 
-      alert("Transaction Successful");
+      await axios.post(`http://localhost:8080/bank/sendMoney?senderAccountNo=${fromAccount}&receiverAccountNo=${Number(toAccount)}&amount=${Number(amount)}`);
 
-      // optional reset
+      setMessage("✅ Transaction Successful");
+
       setAmount("");
       setPin("");
       setToAccount("");
 
     } catch (err) {
       console.error(err);
-      alert("Transaction Failed");
+      setMessage("❌ Transaction Failed");
     }
   };
 
-  return (
-    <>
-      <h2>Send To Bank</h2>
+ return (
+  <div className="bank-transfer-container">
 
-      {/* ✅ Select Your Account */}
-      <select onChange={(e) => setFromAccount(e.target.value)}>
-        <option value="">Select Your Account</option>
-        {bank.map((acc) => (
-          <option key={acc.accountNo} value={acc.accountNo}>
-            {acc.accountNo} - {acc.bankName}
-          </option>
-        ))}
-      </select>
+    <h2>Send To Bank</h2>
 
-      {/* ✅ Receiver Account */}
-      <input
-        type="text"
-        placeholder="Receiver Account Number"
-        onChange={(e) => setToAccount(e.target.value)}
-      />
+    <select onChange={(e) => setSelectedBank(e.target.value)}>
+      <option value="">Select Bank</option>
 
-      {/* ✅ Amount */}
-      <input
-        type="number"
-        placeholder="Amount to Send"
-        onChange={(e) => setAmount(e.target.value)}
-      />
+      {[...new Set(banks.map((b) => b.bankName))].map((name) => (
+        <option key={name} value={name}>
+          {name}
+        </option>
+      ))}
+    </select>
 
-      {/* ✅ PIN */}
-      <input
-        type="password"
-        placeholder="PIN"
-        onChange={(e) => setPin(e.target.value)}
-      />
+    <select onChange={handleAccountChange}>
+      <option value="">Select Account</option>
 
-      <button onClick={handleSend}>Send</button>
+      {filteredAccounts.map((acc) => (
+        <option key={acc.accountNo} value={acc.accountNo}>
+          {acc.accountNo}
+        </option>
+      ))}
+    </select>
 
-      <button onClick={() => navigate("/home", { state: { user } })}>
-        Back
-      </button>
-    </>
-  );
-};
+    {balance !== null && (
+      <p className="balance-text">
+        Available Balance: ₹{balance}
+      </p>
+    )}
+
+    <input
+      type="text"
+      placeholder="Receiver Account Number"
+      value={toAccount}
+      onChange={(e) => setToAccount(e.target.value)}
+    />
+
+    <input
+      type="number"
+      placeholder="Amount"
+      value={amount}
+      onChange={(e) => setAmount(e.target.value)}
+    />
+
+    <input
+      type="password"
+      placeholder="Enter PIN"
+      value={pin}
+      onChange={(e) => setPin(e.target.value)}
+    />
+
+    <button onClick={handleSend}>Send Money</button>
+
+    {message && (
+      <p className={message.includes("Successful") ? "success-msg" : "error-msg"}>
+        {message}
+      </p>
+    )}
+
+    <button onClick={() => navigate("/home", { state: { user } })}>
+      Back
+    </button>
+
+  </div>
+);
+}
+
+export default SendToBank;

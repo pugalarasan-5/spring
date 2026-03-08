@@ -45,11 +45,17 @@ public class TransactionDao {
 		return transactionRepository.findByDate(date);		
 	}
 
-//	public List<Transaction> findByUser(int id) {
-//		User user = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Invalid user Id.."));
-//		List<Transaction> users= transactionRepository.findByUser(user);
-//		return users;
-//	}
+	
+
+	public List<Transaction> findByUser(int id) {
+		
+	    List<Transaction> transactions = transactionRepository
+	            .findByUserIdOrderByIdDesc(id)
+	            .stream()
+	            .toList();
+
+	    return transactions;
+	}
 
 	
 }

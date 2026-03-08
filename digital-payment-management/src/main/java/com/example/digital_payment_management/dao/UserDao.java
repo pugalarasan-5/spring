@@ -111,7 +111,7 @@ public class UserDao {
 	
 	
 	
-	public boolean sendMoney(int senderId, int receiverId, BigDecimal amount) {
+	public User sendMoney(int senderId, int receiverId, BigDecimal amount) {
 		User sender = userRepository.findById(senderId)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Sender Id..."));
 		User receiver = userRepository.findById(receiverId)
@@ -119,13 +119,13 @@ public class UserDao {
 		if (sender.getWalletBalance().compareTo(amount) >= 0) {
 			sender.setWalletBalance(sender.getWalletBalance().subtract(amount));
 			receiver.setWalletBalance(receiver.getWalletBalance().add(amount));
-			userRepository.save(sender);
+			
 			userRepository.save(receiver);
 			transactionRepository.save(new Transaction(amount, "Wallet", "DEBIT", java.time.LocalDateTime.now(), sender));
 			transactionRepository.save(new Transaction(amount, "Wallet", "CREDIT", java.time.LocalDateTime.now(), receiver));
-			return true;
+			return userRepository.save(sender);
 		}
-		return false;
+		return null;
 	}
 
 	public List<Bank> addBank(int userId, long accountNo) {
@@ -136,22 +136,30 @@ public class UserDao {
 		return user.getAccounts();
 	}
 
-	public boolean addMoney(int userId,long accountNo, BigDecimal amount) {
+	public User addMoney(int userId,long accountNo, BigDecimal amount) {
 		User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("Invalid User Id..."));
 		Bank bank = bankRepository.findByAccountNo(accountNo).orElseThrow(()->new IllegalArgumentException("Invalid Account No..."));
 		if (bank.getBalance().compareTo(amount) >= 0) {
 			bank.setBalance(bank.getBalance().subtract(amount));
 			user.setWalletBalance(user.getWalletBalance().add(amount));
-			userRepository.save(user);
+			User u=userRepository.save(user);
             bankRepository.save(bank);
             
 			transactionRepository.save(new Transaction(amount, "Wallet", "CREDIT", java.time.LocalDateTime.now(), user));
 			transactionRepository.save(new Transaction(amount, bank.getBankName(), "DEBIT", java.time.LocalDateTime.now(), user));
-			return true;
+			return u;
 		}
-		return false;
+		return null;
+
+		
 	}
 
+	public List<User> getAll() {
+		
+		return userRepository.findAll();
+	}
+
+	
 
 	
 }

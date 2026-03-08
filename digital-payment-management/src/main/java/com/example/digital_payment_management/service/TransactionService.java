@@ -65,15 +65,16 @@ public class TransactionService {
 		    List<TransactionDTO> list = byDate.stream().map(trans->mapper.map(trans, TransactionDTO.class)).toList();
 		return list;
 	}
+	
 
-//	public List<TransactionDTO> findByUser(int id) {
-//		List<Transaction> list = transactionDao.findByUser(id);
-//		if(list.isEmpty()) {
-//			throw new IllegalArgumentException(id+" user id transcation is Not found...");
-//		}
-//		List<TransactionDTO> dto = list.stream().map(trans->mapper.map(trans, TransactionDTO.class)).toList();
-//		return dto;
-//				
-//	}
+	public List<TransactionDTO> findByUser(int id) {
+		List<Transaction> list = transactionDao.findByUser(id);
+		if(list.isEmpty()) {
+			throw new IllegalArgumentException(id+" user id transcation is Not found...");
+		}
+		List<TransactionDTO> dto = list.stream().map(trans->mapper.map(trans, TransactionDTO.class)).toList();
+		return dto;
+				
+	}
 
 }

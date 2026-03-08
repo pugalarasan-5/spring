@@ -2,7 +2,6 @@ package com.example.digital_payment_management.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +36,7 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@RequestBody LoginRequestDTO loginDTO) {
+		System.out.println("Login Request: " + loginDTO);
 		return ResponseEntity.ok(userService.userLogin(loginDTO));
 	}
 
@@ -92,6 +92,7 @@ public class UserController {
 	}
 //	
 	@PutMapping("/updateStatus/{id}")
+	
 	public ResponseEntity<?> updateUserStatus(@PathVariable int id, @RequestParam UserStatus status) {
 		return ResponseEntity.ok(userService.updateUserStatus(id, status));
 	}
@@ -102,7 +103,7 @@ public class UserController {
 	
 //	SEND MONEY
 
-	@PostMapping("/sendMoney")
+	@PutMapping("/sendMoney")
 	public ResponseEntity<?> sendMoney(@RequestParam int senderId, @RequestParam int receiverId,
 			@RequestParam BigDecimal amount) {
 		return ResponseEntity.ok(userService.sendMoney(senderId, receiverId, amount));
@@ -121,6 +122,10 @@ public class UserController {
 	@PostMapping("/addMoney")
 	public ResponseEntity<?> addMoney(@RequestParam int userId,@RequestParam long accountNo, @RequestParam BigDecimal amount) {
 		return ResponseEntity.ok(userService.addMoney(userId,accountNo, amount));
+	}
+	@RequestMapping("/getAll")
+	public ResponseEntity<?> getAll() {
+		return ResponseEntity.ok(userService.getAll());
 	}
 	
 	
