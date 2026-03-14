@@ -1,57 +1,66 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import "./home.css";
-const Home = () => {
-  const location = useLocation();
 
-  const user = location.state?.user.data || (JSON.parse(localStorage.getItem("user")).data) ;
-  console.log("User on Home:", user);
+const Home = () => {
+
+  const location = useLocation();
   const navigate = useNavigate();
-  const back=()=>{
-    navigate("/")
-    JSON.parse(localStorage.getItem("user")) && localStorage.removeItem("user");
-  }
-  const goToSendMoney = () => {
-    navigate("/send", { state: { user } });
-  }
-  const goToViewBalance = () => {
-    navigate("/view-balance", { state: { user } });
-  }
-  const goToTransactionHistory = () => {
-    navigate("/transaction-history", { state: { user } });
-  }
-  const goToCreateBankAccount = () => {
-    navigate("/create-account", { state: { user } });
-  }
+
+  const user =
+    location.state?.user?.data ||
+    JSON.parse(localStorage.getItem("user"))?.data;
+
+  console.log("User on Home:", user);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    navigate("/digital-ui/");
+  };
 
   return (
-  <div className="home-container">
+    <div className="home-container">
 
-    <h1>Welcome {user.userName}</h1>
+      <div className="card">
 
-    <p className="wallet">Wallet: ₹{user.walletBalance}</p>
+        <h1 className="welcome">Welcome {user.userName} 👋<span>{user.status}</span></h1>
 
-    <button className="send-btn" onClick={goToSendMoney}>
-      Send Money
-    </button>
+        <div className="wallet-card">
+          <h3>Wallet Balance</h3>
+          <h2>₹{user.walletBalance}</h2>
+        </div>
 
-    <button className="balance-btn" onClick={goToViewBalance}>
-      View Balance
-    </button>
+        <div className="btn-group">
 
-    <button className="history-btn" onClick={goToTransactionHistory}>
-      Transaction History
-    </button>
+          <button className="btn send"
+            onClick={() => navigate("/send", { state: { user } })}>
+            Send Money
+          </button>
 
-    <button className="create-btn" onClick={goToCreateBankAccount}>
-      Create New Bank Account
-    </button>
+          <button className="btn balance"
+            onClick={() => navigate("/view-balance", { state: { user } })}>
+            View Balance
+          </button>
 
-    <button className="logout-btn" onClick={back}>
-      Logout
-    </button>
+          <button className="btn history"
+            onClick={() => navigate("/transaction-history", { state: { user } })}>
+            Transaction History
+          </button>
 
-  </div>
-);
+          <button className="btn create"
+            onClick={() => navigate("/create-account", { state: { user } })}>
+            Create Bank Account
+          </button>
+
+        </div>
+
+        <button className="logout-btn" onClick={logout}>
+          Logout
+        </button>
+
+      </div>
+
+    </div>
+  );
 };
 
 export default Home;
