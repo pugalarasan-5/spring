@@ -30,7 +30,7 @@ function TransactionHistory() {
     <table>
       <thead>
         <tr>
-          <th>ID</th>
+          
           <th>Amount</th>
           <th>Bank</th>
           <th>Type</th>
@@ -41,7 +41,7 @@ function TransactionHistory() {
       <tbody>
         {transactions.map((t) => (
           <tr key={t.id}>
-            <td>{t.id}</td>
+            
             <td>{t.amount}</td>
             <td>{t.bankName}</td>
             <td>{t.type}</td>
