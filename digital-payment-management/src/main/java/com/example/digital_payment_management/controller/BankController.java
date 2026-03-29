@@ -21,7 +21,7 @@ import com.example.digital_payment_management.dto.BankLoginDTO;
 import com.example.digital_payment_management.enums.BankStatus;
 import com.example.digital_payment_management.service.BankService;
 import com.example.digital_payment_management.util.ResponseStructure;
-@CrossOrigin(origins = "https://spring-68si9i913-fame1.vercel.app")
+@CrossOrigin(origins = "https://spring-1-3l6v.onrender.com")
 @RestController
 @RequestMapping("/bank")
 public class BankController {

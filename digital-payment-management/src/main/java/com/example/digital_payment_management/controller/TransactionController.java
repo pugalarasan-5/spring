@@ -21,7 +21,7 @@ import com.example.digital_payment_management.service.TransactionService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "https://spring-68si9i913-fame1.vercel.app")
+@CrossOrigin(origins = "https://spring-1-3l6v.onrender.com")
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
