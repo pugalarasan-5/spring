@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,7 @@ import com.example.digital_payment_management.dto.BankLoginDTO;
 import com.example.digital_payment_management.enums.BankStatus;
 import com.example.digital_payment_management.service.BankService;
 import com.example.digital_payment_management.util.ResponseStructure;
-@CrossOrigin(origins = "https://spring-1-3l6v.onrender.com")
+
 @RestController
 @RequestMapping("/bank")
 public class BankController {

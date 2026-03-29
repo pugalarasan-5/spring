@@ -22,5 +22,5 @@ public class DigitalPaymentManagementApplication {
 	public ModelMapper getObject() {
 		return new ModelMapper();
 	}
-
+	
 }
