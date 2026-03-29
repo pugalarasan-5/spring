@@ -27,7 +27,7 @@ function SendToBank() {
     if (!user?.id) return;
 
     axios
-      .get(`http://localhost:8080/bank/getUserId?id=${user.id}`)
+      .get(`https://spring-1-3l6v.onrender.com/bank/getUserId?id=${user.id}`)
       .then((res) => {
         setBanks(res.data.data);
       })
@@ -95,7 +95,7 @@ function SendToBank() {
 
     try {
 
-      await axios.post(`http://localhost:8080/bank/sendMoney?senderAccountNo=${fromAccount}&receiverAccountNo=${Number(toAccount)}&amount=${Number(amount)}`);
+      await axios.post(`https://spring-1-3l6v.onrender.com/bank/sendMoney?senderAccountNo=${fromAccount}&receiverAccountNo=${Number(toAccount)}&amount=${Number(amount)}`);
 
       setMessage("✅ Transaction Successful");
 

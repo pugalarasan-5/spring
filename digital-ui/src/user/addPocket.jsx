@@ -22,7 +22,7 @@ export const AddPocket = () => {
     if(!user?.id) return;
 
     axios
-      .get(`http://localhost:8080/bank/getUserId?id=${user.id}`)
+      .get(`https://spring-1-3l6v.onrender.com/bank/getUserId?id=${user.id}`)
       .then((response) => {
         setBanks(response.data.data);
       })
@@ -68,7 +68,7 @@ export const AddPocket = () => {
     try {
 
       const response = await axios.post(
-        `http://localhost:8080/user/addMoney?userId=${Number(user.id)}&accountNo=${Number(selectedAccount)}&amount=${Number(amount)}`
+        `https://spring-1-3l6v.onrender.com/user/addMoney?userId=${Number(user.id)}&accountNo=${Number(selectedAccount)}&amount=${Number(amount)}`
       );
 
       

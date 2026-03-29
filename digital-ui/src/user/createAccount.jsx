@@ -34,7 +34,7 @@ function CreateAccount() {
 
     try {
 
-      await axios.post("http://localhost:8080/bank", bank);
+      await axios.post("https://spring-1-3l6v.onrender.com/bank", bank);
 
       alert("Bank Account Created Successfully ✅");
 

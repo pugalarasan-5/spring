@@ -15,7 +15,7 @@ function Login() {
       if (data.email.includes("@")) {
         // Email login
         res = await axios.post(
-          `http://localhost:8080/user/login`,
+          `https://spring-1-3l6v.onrender.com/user/login`,
           {
             email: data.email,
             password: data.password
@@ -24,7 +24,7 @@ function Login() {
       } else if (!isNaN(data.email)) {
         // Phone login
         res = await axios.post(
-          `http://localhost:8080/user/login`,
+          `https://spring-1-3l6v.onrender.com/user/login`,
           {
             phone: data.email,
             password: data.password

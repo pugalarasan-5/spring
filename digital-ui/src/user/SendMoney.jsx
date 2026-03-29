@@ -39,7 +39,7 @@ function SendMoney() {
       }
 
        let res=await axios.put(
-        `http://localhost:8080/user/sendMoney?senderId=${user.id}&receiverId=${toUserId}&amount=${amount}`
+        `https://spring-1-3l6v.onrender.com/user/sendMoney?senderId=${user.id}&receiverId=${toUserId}&amount=${amount}`
       );
 
       alert("Transaction Successful");

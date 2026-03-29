@@ -18,7 +18,7 @@ function Register() {
 
   const handleRegister = async () => {
     try {
-      const res = await axios.post("http://localhost:8080/user/register", form);
+      const res = await axios.post("https://spring-1-3l6v.onrender.com/user/register", form);
 
       localStorage.setItem("user", JSON.stringify(res.data));
       navigate("/home", { state: { user: res.data } });

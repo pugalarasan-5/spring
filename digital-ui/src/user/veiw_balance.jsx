@@ -14,7 +14,7 @@ function ViewBalance() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/bank/getUserId?id=${user?.id}`)
+      .get(`https://spring-1-3l6v.onrender.com/bank/getUserId?id=${user?.id}`)
       .then((res) => {
         setBanks(res.data.data);
       })

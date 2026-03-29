@@ -9,7 +9,7 @@ function TransactionHistory() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/transaction/ByUser?id=" + JSON.parse(localStorage.getItem("user")).data.id)
+      .get("https://spring-1-3l6v.onrender.com/transaction/ByUser?id=" + JSON.parse(localStorage.getItem("user")).data.id)
       .then((res) => {
 
         // Sort by date (latest first)
