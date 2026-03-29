@@ -20,7 +20,7 @@ import com.example.digital_payment_management.dto.UserDTO;
 import com.example.digital_payment_management.enums.UserStatus;
 import com.example.digital_payment_management.service.UserService;
 import com.example.digital_payment_management.util.ResponseStructure;
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://spring-68si9i913-fame1.vercel.app")
 @RestController
 @RequestMapping("/user")
 public class UserController {
