@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouterRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Register from "./user/Register";
 import Home from "./user/Home";
@@ -16,7 +16,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/digital-ui/" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route path="/send" element={<SendMoney />} />
@@ -25,8 +25,6 @@ function App() {
         <Route path="/add_pocket" element={<AddPocket />} />
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/view-balance" element={<ViewBalance />} />
-        
-      
       </Routes>
     </Router>
   );

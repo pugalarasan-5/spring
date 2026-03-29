@@ -14,7 +14,7 @@ const Home = () => {
 
   const logout = () => {
     localStorage.removeItem("user");
-    navigate("/digital-ui/");
+    navigate("/");
   };
 
   return (
